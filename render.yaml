@@ -1,0 +1,42 @@
+# ── Render Blueprint — Feto Live Backend API ──
+# Deploy with one click: https://render.com/deploy?repo=<your-repo-url>
+#
+# After deploying:
+#   1. Set environment variables in Render Dashboard → Environment
+#   2. Service will auto-deploy on every push to main
+
+services:
+  # ── Backend API ──
+  - type: web
+    name: feto-backend
+    env: docker
+    repo: https://github.com/Candra0x6/feto-live  # UPDATE THIS
+    branch: main
+    dockerfilePath: ./backend/Dockerfile
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+      - key: DATABASE_URL
+        sync: false  # User must set in dashboard
+      - key: DIRECT_URL
+        sync: false
+      - key: SOLANA_RPC_URL
+        value: https://api.devnet.solana.com
+      - key: PROGRAM_FACTORY_ID
+        value: 8FRnebXM2T3xcvuPpirKRuPZVGPzXpyx1kEVGrkTg2D4
+      - key: PROGRAM_ESCROW_ID
+        value: ey3nM2h4qjMvs33F3nn5WfrEr8f8PAgbkkqyPtwgEGz
+      - key: PROGRAM_SETTLE_ID
+        value: DmRQTT8rJSSxNNjDiXwSMjzotP2xwdfngBnqtggRsPGz
+      - key: JWT_SECRET
+        generateValue: true
+      - key: KEEPER_DEMO_MODE
+        value: "true"
+      - key: TXLINE_API_URL
+        value: https://txline-dev.txodds.com
+      - key: TXLINE_WS_URL
+        value: wss://txline-dev.txodds.com/ws/scores

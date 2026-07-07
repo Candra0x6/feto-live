@@ -1,0 +1,22 @@
+node_modules/
+target/
+.idl/
+.generated/
+dist/
+
+.env
+.env.local
+
+# Solana
+*.json
+!programs/*/src/*.json
+!target/idl/*.json
+
+# Anchor
+test-ledger/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo

@@ -1,0 +1,16 @@
+[programs.devnet]
+feto_factory = "8FRnebXM2T3xcvuPpirKRuPZVGPzXpyx1kEVGrkTg2D4"
+feto_escrow = "ey3nM2h4qjMvs33F3nn5WfrEr8f8PAgbkkqyPtwgEGz"
+feto_settle = "DmRQTT8rJSSxNNjDiXwSMjzotP2xwdfngBnqtggRsPGz"
+
+[programs.localnet]
+feto_factory = "8FRnebXM2T3xcvuPpirKRuPZVGPzXpyx1kEVGrkTg2D4"
+feto_escrow = "ey3nM2h4qjMvs33F3nn5WfrEr8f8PAgbkkqyPtwgEGz"
+feto_settle = "DmRQTT8rJSSxNNjDiXwSMjzotP2xwdfngBnqtggRsPGz"
+
+[scripts]
+test = "npx ts-mocha -p tsconfig.json -t 1000000 tests/**/*.ts"
+
+[provider]
+cluster = "Devnet"
+wallet = "~/.config/solana/id.json"

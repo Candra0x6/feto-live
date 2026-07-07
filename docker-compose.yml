@@ -1,0 +1,43 @@
+# ── Feto Live — Docker Compose (Local Dev + Demo) ──
+# Start with: docker compose up -d
+# Stop with:   docker compose down
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: feto-backend
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - DATABASE_URL=${DATABASE_URL}
+      - DIRECT_URL=${DIRECT_URL}
+      - SOLANA_RPC_URL=https://api.devnet.solana.com
+      - PROGRAM_FACTORY_ID=8FRnebXM2T3xcvuPpirKRuPZVGPzXpyx1kEVGrkTg2D4
+      - PROGRAM_ESCROW_ID=ey3nM2h4qjMvs33F3nn5WfrEr8f8PAgbkkqyPtwgEGz
+      - PROGRAM_SETTLE_ID=DmRQTT8rJSSxNNjDiXwSMjzotP2xwdfngBnqtggRsPGz
+      - KEEPER_DEMO_MODE=true
+      - KEEPER_HEALTH_PORT=9090
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3001/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+
+  # Redis (for production caching — optional in dev)
+  redis:
+    image: redis:7-alpine
+    container_name: feto-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+
+volumes:
+  redis-data:

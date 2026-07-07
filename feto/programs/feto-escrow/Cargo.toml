@@ -1,0 +1,29 @@
+[package]
+name = "feto-escrow"
+version = "0.1.0"
+description = "Feto Live - Escrow Manager: Handles bet escrow, positions, and payouts"
+edition = "2021"
+
+[lib]
+name = "feto_escrow"
+crate-type = ["cdylib", "lib"]
+
+[features]
+anchor-debug = []
+custom-heap = []
+custom-panic = []
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+cpi = ["no-entrypoint"]
+default = []
+idl-build = ["anchor-lang/idl-build", "anchor-spl/idl-build"]
+
+[lints]
+workspace = true
+
+[dependencies]
+anchor-lang = "1.0.0"
+anchor-spl = "1.0.0"
+solana-program = "^3"
+spl-token-interface = "2.0"

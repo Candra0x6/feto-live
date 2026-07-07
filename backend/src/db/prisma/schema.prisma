@@ -1,0 +1,144 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum MatchStatus {
+  SCHEDULED
+  LIVE
+  PAUSED
+  FINISHED
+  ABANDONED
+}
+
+enum MarketType {
+  NEXT_CORNER
+  NEXT_CARD
+  NEXT_SUBSTITUTION
+  NEXT_GOAL_SCORER
+  GOAL_IN_5_MIN
+  ANY_GOAL
+}
+
+enum MarketStatus {
+  OPEN
+  LOCKED
+  SETTLED
+  CANCELLED
+}
+
+enum PositionStatus {
+  ACTIVE
+  LOCKED
+  WON
+  LOST
+  LIQUIDATED
+  CANCELLED
+}
+
+model User {
+  id            String     @id @default(uuid())
+  walletAddress String     @unique
+  username      String?
+  avatarUrl     String?
+  createdAt     DateTime   @default(now())
+  lastActive    DateTime   @updatedAt
+  totalBets     Int        @default(0)
+  totalWins     Int        @default(0)
+  totalVolume   Decimal    @default(0) @db.Decimal(20, 6)
+  totalPnl      Decimal    @default(0) @db.Decimal(20, 6)
+  streakBest    Int        @default(0)
+  streakCurrent Int        @default(0)
+  badges        Json       @default("[]")
+  positions     Position[]
+}
+
+model Match {
+  id                String      @id @default(uuid())
+  txlineMatchId     BigInt      @unique
+  homeTeam          String
+  awayTeam          String
+  competition       String?
+  venue             String?
+  startTime         DateTime
+  status            MatchStatus @default(SCHEDULED)
+  homeScore         Int         @default(0)
+  awayScore         Int         @default(0)
+  currentMinute     Int?
+  txlineFixtureHash String?
+  chainMatchPda     String?
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  markets           Market[]
+}
+
+model Market {
+  id               String       @id @default(uuid())
+  chainMarketId    BigInt
+  matchId          String
+  match            Match        @relation(fields: [matchId], references: [id])
+  marketType       MarketType
+  status           MarketStatus @default(OPEN)
+  outcomes         Json         @default("[]")
+  totalPool        Decimal      @default(0) @db.Decimal(20, 6)
+  winningOutcome   Int?
+  lockTime         DateTime?
+  settlementTime   DateTime?
+  protocolFeeBps   Int?
+  leverageEnabled  Boolean      @default(false)
+  maxLeverage      Int          @default(1)
+  chainMarketPda   String?
+  createdAt        DateTime     @default(now())
+  positions        Position[]
+
+  @@index([matchId])
+  @@index([chainMarketId])
+  @@index([status])
+}
+
+model Position {
+  id               String         @id @default(uuid())
+  chainPositionId  BigInt
+  marketId         String
+  market           Market         @relation(fields: [marketId], references: [id])
+  userId           String?
+  user             User?          @relation(fields: [userId], references: [id])
+  walletAddress    String
+  outcomeIndex     Int
+  amount           Decimal        @db.Decimal(20, 6)
+  leverage         Int            @default(1)
+  collateral       Decimal        @db.Decimal(20, 6)
+  potentialPayout  Decimal?       @db.Decimal(20, 6)
+  oddsAtEntry      Decimal?       @db.Decimal(10, 4)
+  status           PositionStatus @default(ACTIVE)
+  claimed          Boolean        @default(false)
+  payoutAmount     Decimal?       @db.Decimal(20, 6)
+  chainPositionPda String?
+  createdAt        DateTime       @default(now())
+  settledAt        DateTime?
+
+  @@index([walletAddress])
+  @@index([marketId])
+  @@index([status])
+}
+
+model Event {
+  id            String   @id @default(uuid())
+  matchId       String
+  txlineEventId String?
+  eventType     String
+  team          String?
+  player        String?
+  minute        Int
+  timestamp     DateTime
+  merkleProof   Json?
+  createdAt     DateTime @default(now())
+
+  @@index([matchId])
+  @@index([eventType])
+}
