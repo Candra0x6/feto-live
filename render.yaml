@@ -10,7 +10,7 @@ services:
   - type: web
     name: feto-backend
     env: docker
-    repo: https://github.com/Candra0x6/feto-live  # UPDATE THIS
+    repo: https://github.com/Candra0x6/feto-live
     branch: main
     dockerfilePath: ./backend/Dockerfile
     healthCheckPath: /health
